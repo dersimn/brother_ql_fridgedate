@@ -1,0 +1,11 @@
+[Unit]
+Description=Label Printer Service
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/opt/labelprinter
+ExecStart=/usr/bin/python3 /opt/labelprinter/print-mqtt.py
+
+[Install]
+WantedBy=multi-user.target
