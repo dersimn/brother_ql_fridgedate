@@ -1,3 +1,5 @@
+![Gif](docs/IMG_8864.TRIM.gif?raw=true)
+
 This whole project is still kinda sketchy. The goal is to attach a Raspberry Pi (or any other small board) to a Brother labelprinter and use it to print the current date onto a label, when a button is pressed.  
 Why? To stick it on food in your fridge. Ever lived in a shared appartment?
 
