@@ -4,8 +4,8 @@ After=multi-user.target
 
 [Service]
 Type=idle
-WorkingDirectory=/opt/labelprinter
-ExecStart=/usr/bin/python3 /opt/labelprinter/print-mqtt.py
+WorkingDirectory=/opt/brother_ql_fridgedate
+ExecStart=/usr/bin/python3 /opt/brother_ql_fridgedate/print-mqtt.py
 
 [Install]
 WantedBy=multi-user.target
