@@ -1,20 +1,41 @@
-This whole project is still kinda sketchy. Goal is to receive an MQTT message and then print the current date onto a label.  
+This whole project is still kinda sketchy. The goal is to attach a Raspberry Pi (or any other small board) to a Brother labelprinter and use it to print the current date onto a label, when a button is pressed.  
 Why? To stick it on food in your fridge. Ever lived in a shared appartment?
 
-## Install
+The script implements this topic with last-will message as indicator if it's still running:
 
-    cd /opt
-    git clone <this url> labelprinter
+    dersimn/maintenance/LabelPrinter/online    -> bool
 
-Install requirements (maybe one of them are redundant - I lost track during development):
+Sending anything to this topic will trigger printing of a new label with the current date:
 
-    apt-get install libjpeg-dev zlib1g-dev python3-setuptools python3-pip libopenjp2-7-dev libtiff5 git fontconfig python3-rpi.gpio build-essentials
-    pip3 install --upgrade brother_ql
+    dersimn/action/LabelPrinter/printdate    <- any string
 
-Copy Unit file to `/lib/systemd/system/labelprinter.service`, then
+Configure OpenHAB or [mqtt-smarthome](https://github.com/mqtt-smarthome/mqtt-smarthome) to trigger this topic when an Amazon Dash button is pressed.
 
-    systemctl daemon-reload
-    systemctl enable labelprinter.service
-    systemctl start labelprinter.service
+## Usage
 
-    
+[Install Docker](https://docs.docker.com/install/linux/docker-ce/debian/#install-using-the-convenience-script) on your Raspberry Pi and use this command to run the script:
+
+    docker run -d --restart=always --name=labelprinter \
+        --device=/dev/usb/lp0 \
+        -e BROTHER_MODEL="QL-700" \
+        -e BROTHER_LABEL="d24" \
+        -e MQTT_HOST="10.1.1.50" \
+        -e TZ="Europe/Berlin" \
+        dersimn/brother_ql_fridgedate:armhf
+
+Refer to the [brother_ql](https://github.com/pklaus/brother_ql) documentation / source code for compatible [printer models](https://github.com/pklaus/brother_ql/blob/1cfc7e7302bb3c6ac5632cc478d4c028d7c67a92/brother_ql/models.py#L43) and [label types](https://github.com/pklaus/brother_ql/blob/1cfc7e7302bb3c6ac5632cc478d4c028d7c67a92/brother_ql/labels.py#L81).
+
+## Development
+
+'Cross-compile' with *Docker for Mac*:
+
+    docker pull --platform arm arm32v7/python:3
+    docker build --no-cache -t dersimn/brother_ql_fridgedate:armhf -f Dockerfile.armhf .
+
+Copy over to the Pi with:
+
+    docker save dersimn/brother_ql_fridgedate:armhf | gzip | ssh root@10.1.1.145 'gunzip | docker load'
+
+## Credits
+
+[Philipp "pklaus" Klaus](https://github.com/pklaus) for his [brother_ql](https://github.com/pklaus/brother_ql) package. Jim Lyles for the attached [Vera font](https://en.wikipedia.org/wiki/Bitstream_Vera).
