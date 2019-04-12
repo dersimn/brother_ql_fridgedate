@@ -1,17 +1,18 @@
+import os
+import paho.mqtt.client as mqtt
+
 from gen_img import gen_img
 from print_img import print_img
 from gen_date_string import gen_date_string
 
-import paho.mqtt.client as mqtt
-
 
 # Settings
-fontname = 'VeraMoBd.ttf'    # Font
-img_fraction = 0.8           # use 80% of the max. size
-model = 'QL-700'             # Printer model
-label = 'd24'                # Label model
-device = '/dev/usb/lp0'      # 
-mqttip = '10.1.1.50'         # MQTT host
+fontname     = os.getenv('FONT_FILE', 'VeraMoBd.ttf')
+img_fraction = float(os.getenv('IMG_SIZE', 0.8))
+device       = os.getenv('USB_DEVICE', '/dev/usb/lp0')
+mqttip       = os.getenv('MQTT_HOST',  '127.0.0.1')
+model        = os.getenv('BROTHER_MODEL')
+label        = os.getenv('BROTHER_LABEL')
 
 
 # MQTT

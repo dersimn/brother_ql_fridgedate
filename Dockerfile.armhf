@@ -1,0 +1,9 @@
+FROM arm32v7/python:3
+
+RUN pip3 install paho-mqtt
+RUN pip3 install brother_ql
+
+COPY . /python
+
+WORKDIR /python
+CMD [ "python3", "_print_mqtt.py" ]
