@@ -21,6 +21,10 @@ def on_connect(client, userdata, flags, rc):
     client.publish('dersimn/maintenance/LabelPrinter/online', 'true', retain=True)
     client.subscribe('dersimn/action/LabelPrinter/printdate')
 
+def on_disconnect(client, userdata, rc):
+    if rc == 0:
+        client.publish('dersimn/maintenance/LabelPrinter/online', 'false', retain=True)
+
 def on_message(client, userdata, msg):
     print(msg.topic)
     if msg.topic == 'dersimn/action/LabelPrinter/printdate':
