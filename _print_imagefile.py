@@ -11,7 +11,7 @@ device = '/dev/usb/lp0'      #
 
 
 # Load image from file
-img = Image.open('print_img.png')
+img = Image.open('_debug.png')
 
 # Print image
 print_img(img, model, label, device)
