@@ -1,0 +1,38 @@
+---
+pages:
+  - pageid: mainpage
+    pageicon: icon.png
+    pagetitle: Label Printer
+    sections:
+      - sectiontitle: Preview
+        items:
+          - type: html
+            topic: dersimn/LabelPrinter/status/preview
+            transform:
+              get: $('#preview').attr('src', message.data)
+            html: >
+              <style>
+                #preview {
+                  margin: 10px auto;
+                  border: 1px dashed gray;
+                  border-radius: 100%;
+                }
+              </style
+              <div class="list-group-item flex-column align-items-start p-0">
+                <div class="d-flex">
+                  <img id="preview" src="placeholder.png">
+                </div
+              </div>
+      - sectiontitle: Print
+        items:
+          - title: Print
+            type: button
+            topic:
+              set: dersimn/LabelPrinter/set/print/image
+            transform:
+              set: >
+                return {
+                  data: $('#preview').attr('src')
+                }
+            buttons:
+              - label: Print

@@ -5,6 +5,12 @@ from io import BytesIO
 import json
 import base64
 import paho.mqtt.client as mqtt
+from PIL import Image
+import re
+
+from brother_ql.raster import BrotherQLRaster
+from brother_ql.conversion import convert
+from brother_ql.backends.helpers import send
 
 from helper.gen_img import gen_img
 from helper.print_img import print_img
@@ -80,8 +86,31 @@ def on_message(client, userdata, msg):
         print_img(img, MODEL, DEAFULT_LABEL, DEVICE)
 
     # Print Image
-    #if msg.topic == (MQTT_PREFIX+'/set/print/image'):
-        # ...
+    if msg.topic == (MQTT_PREFIX+'/set/print/image'):
+        # Load JSON
+        try:
+            obj = json.loads(msg.payload)
+
+            b64_img = obj.get('data')
+            label = obj.get('label', DEAFULT_LABEL)
+        except ValueError as e:
+            client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
+                    'status': 'error',
+                    'message': 'Invalid JSON sent.'
+                }))
+            return
+
+        # Remove 'data:image/png;base64,' from beginning
+        b64_img = re.sub('^data:image/.+;base64,', '', b64_img)
+
+        # Load Image
+        img = Image.open(BytesIO(base64.b64decode(b64_img)))
+
+        # Setup Printer
+        qlr = BrotherQLRaster(MODEL)
+        qlr.exception_on_warning = True
+        convert(qlr, [img], label, dither=True) # Convert
+        send(qlr.data, DEVICE)     # Do the printing
 
 client = mqtt.Client()
 client.on_connect = on_connect
