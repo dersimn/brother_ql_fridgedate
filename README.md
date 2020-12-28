@@ -23,20 +23,17 @@ Configure OpenHAB or [mqtt-smarthome](https://github.com/mqtt-smarthome/mqtt-sma
         -e BROTHER_LABEL="d24" \
         -e MQTT_HOST="10.1.1.50" \
         -e TZ="Europe/Berlin" \
-        dersimn/brother_ql_fridgedate:armhf
+        dersimn/brother_ql_fridgedate
 
 Refer to the [brother_ql](https://github.com/pklaus/brother_ql) documentation / source code for compatible [printer models](https://github.com/pklaus/brother_ql/blob/1cfc7e7302bb3c6ac5632cc478d4c028d7c67a92/brother_ql/models.py#L43) and [label types](https://github.com/pklaus/brother_ql/blob/1cfc7e7302bb3c6ac5632cc478d4c028d7c67a92/brother_ql/labels.py#L81).
 
 ## Development
 
-'Cross-compile' with *Docker for Mac*:
+Docker Hub deploy:
 
-    docker pull --platform arm arm32v7/python:3
-    docker build --no-cache -t dersimn/brother_ql_fridgedate:armhf -f Dockerfile.armhf .
-
-Copy over to the Pi with:
-
-    docker save dersimn/brother_ql_fridgedate:armhf | gzip | ssh root@10.1.1.145 'gunzip | docker load'
+    docker buildx create --name mybuilder
+    docker buildx use mybuilder
+    docker buildx build --platform linux/amd64,linux/arm/v7 -t dersimn/brother_ql_fridgedate -t dersimn/brother_ql_fridgedate:1.x.0 --push .
 
 ## Credits
 
