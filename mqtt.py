@@ -55,16 +55,22 @@ def on_message(client, userdata, msg):
         except ValueError as e:
             settings = {}
 
+        text = settings.get('text', gen_date_string())
+        label = settings.get('label', DEAFULT_LABEL)
+        size = settings.get('size', DEFAULT_SIZE)
+        font = settings.get('font', DEFAULT_FONT)
+
         # Generate Image
-        img = gen_img(
-            settings.get('text', gen_date_string()), 
-            settings.get('label', DEAFULT_LABEL), 
-            settings.get('size', DEFAULT_SIZE), 
-            settings.get('font', DEFAULT_FONT)
-        )
+        img = gen_img(text, label, size, font)
 
         # Publish
-        client.publish(MQTT_PREFIX+'/status/preview', json.dumps({'data': image_to_base64_png(img)}))
+        client.publish(MQTT_PREFIX+'/status/preview', json.dumps({
+            'data': image_to_base64_png(img),
+            'text': text,
+            'label': label,
+            'size': size,
+            'font': font
+        }))
 
     # Print Text
     if msg.topic == (MQTT_PREFIX+'/set/print/text'):
