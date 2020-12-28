@@ -95,22 +95,35 @@ def on_message(client, userdata, msg):
             label = obj.get('label', DEAFULT_LABEL)
         except ValueError as e:
             client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
-                    'status': 'error',
-                    'message': 'Invalid JSON sent.'
-                }))
+                'status': 'error',
+                'message': 'Invalid JSON sent.'
+            }))
             return
 
-        # Remove 'data:image/png;base64,' from beginning
-        b64_img = re.sub('^data:image/.+;base64,', '', b64_img)
+        try:
+            # Remove 'data:image/png;base64,' from beginning
+            b64_img_data = re.sub('^data:image/.+;base64,', '', b64_img)
 
-        # Load Image
-        img = Image.open(BytesIO(base64.b64decode(b64_img)))
+            # Load Image
+            img = Image.open(BytesIO(base64.b64decode(b64_img_data)))
 
-        # Setup Printer
-        qlr = BrotherQLRaster(MODEL)
-        qlr.exception_on_warning = True
-        convert(qlr, [img], label, dither=True) # Convert
-        send(qlr.data, DEVICE)     # Do the printing
+            # Setup Printer
+            qlr = BrotherQLRaster(MODEL)
+            qlr.exception_on_warning = True
+            convert(qlr, [img], label, dither=True) # Convert
+            status = send(qlr.data, DEVICE)         # Do the printing
+
+            # Publish on success
+            client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
+                'status': 'success',
+                'message': status,
+                'data': b64_img
+            }))
+        except Exception as e:
+            client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
+                'status': 'error',
+                'message': str(e)
+            }))
 
 client = mqtt.Client()
 client.on_connect = on_connect
