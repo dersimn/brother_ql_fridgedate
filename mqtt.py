@@ -9,6 +9,7 @@ import paho.mqtt.client as mqtt
 from helper.gen_img import gen_img
 from helper.print_img import print_img
 from helper.gen_date_string import gen_date_string
+from helper.font_helpers import get_fonts
 
 
 # Settings
@@ -32,6 +33,9 @@ def image_to_base64_png(im):
 def on_connect(client, userdata, flags, rc):
     print('mqtt > connected')
     client.publish(MQTT_PREFIX+'/online', 'true', retain=True)
+
+    client.publish(MQTT_PREFIX+'/status/fonts', json.dumps(get_fonts('./fonts')), retain=True)
+
     client.subscribe(MQTT_PREFIX+'/set/preview')
     client.subscribe(MQTT_PREFIX+'/set/print/text')
     client.subscribe(MQTT_PREFIX+'/set/print/image')
