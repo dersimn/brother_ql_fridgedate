@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from gen_img import gen_img
-from print_img import print_img
-from gen_date_string import gen_date_string
+from helper.gen_img import gen_img
+from helper.print_img import print_img
+from helper.gen_date_string import gen_date_string
 
 
 # Settings

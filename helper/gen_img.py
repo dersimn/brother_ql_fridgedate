@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 
-from get_max_pixel_size_of_label import get_max_pixel_size_of_label
+from helper.get_max_pixel_size_of_label import get_max_pixel_size_of_label
 
 
 def gen_img(txt, label, img_fraction=0.8, fontname='VeraMoBd.ttf'):

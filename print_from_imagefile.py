@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from PIL import Image
-from print_img import print_img
+from helper.print_img import print_img
 
 
 # Settings
