@@ -9,7 +9,7 @@ from helper.gen_date_string import gen_date_string
 
 
 # Settings
-fontname     = os.getenv('FONT_FILE', 'VeraMoBd.ttf')
+fontname     = os.getenv('FONT_FILE', './fonts/VeraMoBd.ttf')
 img_fraction = float(os.getenv('IMG_SIZE', 0.8))
 device       = os.getenv('USB_DEVICE', '/dev/usb/lp0')
 mqttip       = os.getenv('MQTT_HOST',  '127.0.0.1')
