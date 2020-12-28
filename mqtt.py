@@ -11,6 +11,7 @@ import re
 from brother_ql.raster import BrotherQLRaster
 from brother_ql.conversion import convert
 from brother_ql.backends.helpers import send
+from brother_ql.devicedependent import label_type_specs, label_sizes, ROUND_DIE_CUT_LABEL
 
 from helper.gen_img import gen_img
 from helper.print_img import print_img
@@ -41,6 +42,14 @@ def on_connect(client, userdata, flags, rc):
     client.publish(MQTT_PREFIX+'/online', 'true', retain=True)
 
     client.publish(MQTT_PREFIX+'/status/fonts', json.dumps(get_fonts('./fonts')), retain=True)
+    client.publish(MQTT_PREFIX+'/status/label-sizes', json.dumps([
+        {
+            'name': name,
+            'friendly-name': label_type_specs[name]['name'], 
+            'round': (label_type_specs[name]['kind'] in (ROUND_DIE_CUT_LABEL,)) # True if round label
+        }
+        for name in label_sizes
+    ]), retain=True)
 
     client.subscribe(MQTT_PREFIX+'/set/preview')
     client.subscribe(MQTT_PREFIX+'/set/print/image')
