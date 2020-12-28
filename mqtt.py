@@ -43,7 +43,6 @@ def on_connect(client, userdata, flags, rc):
     client.publish(MQTT_PREFIX+'/status/fonts', json.dumps(get_fonts('./fonts')), retain=True)
 
     client.subscribe(MQTT_PREFIX+'/set/preview')
-    client.subscribe(MQTT_PREFIX+'/set/print/text')
     client.subscribe(MQTT_PREFIX+'/set/print/image')
 
 def on_disconnect(client, userdata, rc):
@@ -77,13 +76,6 @@ def on_message(client, userdata, msg):
             'size': size,
             'font': font
         }))
-
-    # Print Text
-    if msg.topic == (MQTT_PREFIX+'/set/print/text'):
-        # Generate image
-        img = gen_img(gen_date_string(), DEAFULT_LABEL, DEFAULT_SIZE, DEFAULT_FONT)
-        # Print image
-        print_img(img, MODEL, DEAFULT_LABEL, DEVICE)
 
     # Print Image
     if msg.topic == (MQTT_PREFIX+'/set/print/image'):
