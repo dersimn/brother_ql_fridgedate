@@ -32,8 +32,9 @@ def image_to_base64_png(im):
 def on_connect(client, userdata, flags, rc):
     print('mqtt > connected')
     client.publish(MQTT_PREFIX+'/online', 'true', retain=True)
-    client.subscribe(MQTT_PREFIX+'/set/print')
     client.subscribe(MQTT_PREFIX+'/set/preview')
+    client.subscribe(MQTT_PREFIX+'/set/print/text')
+    client.subscribe(MQTT_PREFIX+'/set/print/image')
 
 def on_disconnect(client, userdata, rc):
     if rc == 0:
@@ -41,14 +42,36 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
     print('mqtt <', msg.topic)
+
+    # Preview
     if msg.topic == (MQTT_PREFIX+'/set/preview'):
-        img = gen_img(gen_date_string(), DEAFULT_LABEL, DEFAULT_SIZE, DEFAULT_FONT)
+        # Load JSON
+        try:
+            settings = json.loads(msg.payload)
+        except ValueError as e:
+            settings = {}
+
+        # Generate Image
+        img = gen_img(
+            settings.get('text', gen_date_string()), 
+            settings.get('label', DEAFULT_LABEL), 
+            settings.get('size', DEFAULT_SIZE), 
+            settings.get('font', DEFAULT_FONT)
+        )
+
+        # Publish
         client.publish(MQTT_PREFIX+'/status/preview', json.dumps({'data': image_to_base64_png(img)}))
-    if msg.topic == (MQTT_PREFIX+'/set/print'):
+
+    # Print Text
+    if msg.topic == (MQTT_PREFIX+'/set/print/text'):
         # Generate image
         img = gen_img(gen_date_string(), DEAFULT_LABEL, DEFAULT_SIZE, DEFAULT_FONT)
         # Print image
         print_img(img, MODEL, DEAFULT_LABEL, DEVICE)
+
+    # Print Image
+    #if msg.topic == (MQTT_PREFIX+'/set/print/image'):
+        # ...
 
 client = mqtt.Client()
 client.on_connect = on_connect
