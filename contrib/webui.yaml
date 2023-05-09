@@ -6,8 +6,20 @@ pages:
     sections:
       - sectiontitle: Preview
         items:
+          - title: Status
+            type: text
+            topic: dersimn/LabelPrinter/status/print
+            transform: return message.status
+          - title: Message
+            type: text
+            topic: dersimn/LabelPrinter/status/print
+            transform: return message.message
+          - title: Label
+            type: text
+            topic: dersimn/LabelPrinter/status/print
+            transform: return message.label
           - type: html
-            topic: dersimn/LabelPrinter/status/preview
+            topic: dersimn/LabelPrinter/status/print
             transform:
               get: $('#preview').attr('src', message.data)
             html: >
@@ -23,9 +35,9 @@ pages:
                   <img id="preview" src="placeholder.png">
                 </div
               </div>
-      - sectiontitle: Print
+      - sectiontitle: Preview
         items:
-          - title: Print
+          - title: Print Preview
             type: button
             topic:
               set: dersimn/LabelPrinter/set/print/image

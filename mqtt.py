@@ -61,7 +61,7 @@ def on_disconnect(client, userdata, rc):
 def on_message(client, userdata, msg):
     print('mqtt <', msg.topic)
 
-    # Preview
+    # Print Text
     if msg.topic == (MQTT_PREFIX+'/set/print/text'):
         # Load JSON
         try:
@@ -73,18 +73,37 @@ def on_message(client, userdata, msg):
         label = settings.get('label', DEAFULT_LABEL)
         size = settings.get('size', DEFAULT_SIZE)
         font = settings.get('font', DEFAULT_FONT)
+        preview = settings.get('preview', True)
 
         # Generate Image
         img = gen_img(text, label, size, font)
 
-        # Publish
-        client.publish(MQTT_PREFIX+'/status/preview', json.dumps({
-            'data': image_to_base64_png(img),
-            'text': text,
-            'label': label,
-            'size': size,
-            'font': font
-        }))
+        if preview:
+            # Just publish
+            client.publish(MQTT_PREFIX+'/status/print', json.dumps({
+                'status': 'preview',
+                'data': image_to_base64_png(img),
+                'label': label
+            }))
+        else:
+            try:
+                # Print
+                status = print_img(img, MODEL, label, DEVICE)
+
+                # Publish on success
+                client.publish(MQTT_PREFIX+'/status/print', json.dumps({
+                    'status': 'success',
+                    'message': status,
+                    'data': image_to_base64_png(img),
+                    'label': label
+                }))
+            except Exception as e:
+                client.publish(MQTT_PREFIX+'/status/print', json.dumps({
+                    'status': 'error',
+                    'message': str(e),
+                    'data': image_to_base64_png(img),
+                    'label': label
+                }))
 
     # Print Image
     if msg.topic == (MQTT_PREFIX+'/set/print/image'):
@@ -112,15 +131,18 @@ def on_message(client, userdata, msg):
             status = print_img(img, MODEL, label, DEVICE)
 
             # Publish on success
-            client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
+            client.publish(MQTT_PREFIX+'/status/print', json.dumps({
                 'status': 'success',
                 'message': status,
-                'data': b64_img
+                'data': b64_img,
+                'label': label
             }))
         except Exception as e:
-            client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
+            client.publish(MQTT_PREFIX+'/status/print', json.dumps({
                 'status': 'error',
-                'message': str(e)
+                'message': str(e),
+                'data': b64_img,
+                'label': label
             }))
 
 client = mqtt.Client()
