@@ -9,4 +9,4 @@ def print_img(img, model, label, device):
     qlr.exception_on_warning = True
 
     convert(qlr, [img], label, dither=True) # Convert
-    send(qlr.data, device)     # Do the printing
+    return send(qlr.data, device)                  # Do the printing

@@ -108,11 +108,8 @@ def on_message(client, userdata, msg):
             # Load Image
             img = Image.open(BytesIO(base64.b64decode(b64_img_data)))
 
-            # Setup Printer
-            qlr = BrotherQLRaster(MODEL)
-            qlr.exception_on_warning = True
-            convert(qlr, [img], label, dither=True) # Convert
-            status = send(qlr.data, DEVICE)         # Do the printing
+            # Print
+            status = print_img(img, MODEL, label, DEVICE)
 
             # Publish on success
             client.publish(MQTT_PREFIX+'/status/print/image', json.dumps({
