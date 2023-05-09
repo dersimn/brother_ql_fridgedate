@@ -51,7 +51,7 @@ def on_connect(client, userdata, flags, rc):
         for name in label_sizes
     ]), retain=True)
 
-    client.subscribe(MQTT_PREFIX+'/set/preview')
+    client.subscribe(MQTT_PREFIX+'/set/print/text')
     client.subscribe(MQTT_PREFIX+'/set/print/image')
 
 def on_disconnect(client, userdata, rc):
@@ -62,7 +62,7 @@ def on_message(client, userdata, msg):
     print('mqtt <', msg.topic)
 
     # Preview
-    if msg.topic == (MQTT_PREFIX+'/set/preview'):
+    if msg.topic == (MQTT_PREFIX+'/set/print/text'):
         # Load JSON
         try:
             settings = json.loads(msg.payload)
