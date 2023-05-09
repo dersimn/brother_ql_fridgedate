@@ -1,0 +1,32 @@
+---
+version: '3'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto
+    ports:
+      - 1883:1883
+      #- 9001:9001
+    volumes:
+      - ./contrib/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+  webui:
+    image: dersimn/mqtt-smarthome-webui
+    depends_on:
+      - mqtt
+    ports:
+      - 8000:80
+    environment:
+      - WS_PROXY=mqtt:9001
+    volumes:
+      - ./contrib/webui.yaml:/www/data.yaml:ro
+  brother_ql_fridgedate:
+    build: .
+    depends_on:
+      - mqtt
+    environment:
+      - TZ=Europe/Berlin
+      - BROTHER_MODEL=QL-700
+      - BROTHER_LABEL=d24
+      - MQTT_HOST=mqtt
+    devices:
+      - /dev/usb/lp0:/dev/usb/lp0

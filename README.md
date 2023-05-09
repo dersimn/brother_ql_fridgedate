@@ -29,7 +29,24 @@ Refer to the [brother_ql](https://github.com/pklaus/brother_ql) documentation / 
 
 ## Development
 
-Docker Hub deploy:
+### Local
+
+    docker run -d --name=mqtt -p 1883:1883 -p 9001:9001 -v "$(pwd)/contrib/mosquitto.conf":/mosquitto/config/mosquitto.conf:ro eclipse-mosquitto
+
+    docker run -d --name=webui \
+        -v $(pwd)/contrib/webui.yaml:/www/data.yaml:ro \
+        -e "WS_PROXY=host.docker.internal:9001" \
+        -p 8000:80 \
+        dersimn/mqtt-smarthome-webui
+
+    docker build -t test .
+    docker run --rm -e MQTT_HOST=host.docker.internal test python3 mqtt.py
+
+### Local with Docker Compose
+
+    docker compose up
+
+### Docker Hub deploy:
 
     docker buildx create --name mybuilder
     docker buildx use mybuilder
