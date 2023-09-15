@@ -2,7 +2,8 @@ FROM python:3
 
 RUN pip3 install \
         paho-mqtt \
-        brother_ql
+        brother_ql \
+        Pillow==9.*
 
 WORKDIR /app
 COPY . /app
